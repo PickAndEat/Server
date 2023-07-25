@@ -2,6 +2,8 @@ using GraphQL.AspNet.Configuration;
 using GraphQL.AspNet.ServerExtensions.MultipartRequests;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption;
+using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PickAndEat;
@@ -10,13 +12,16 @@ var builder = WebApplication.CreateBuilder(args);
 var settings = new Settings(builder.Configuration);
 
 builder.Services
-  .AddSingleton(settings);
-
-builder.Services
+  .AddSingleton(settings)
   .AddDbContext<Database>();
 
-builder.Services.AddDataProtection()
-  .PersistKeysToDbContext<Database>();
+builder.Services
+  .AddDataProtection()
+  .PersistKeysToDbContext<Database>()
+  .UseCryptographicAlgorithms(new AuthenticatedEncryptorConfiguration {
+    EncryptionAlgorithm = EncryptionAlgorithm.AES_256_CBC,
+    ValidationAlgorithm = ValidationAlgorithm.HMACSHA256
+  });
 
 builder.Services
   .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -38,9 +43,10 @@ builder.Services
 builder.Services
   .AddAuthorization();
 
-builder.Services.AddGraphQL(options => {
-  options.AddMultipartRequestSupport();
-});
+builder.Services
+  .AddGraphQL(options => {
+    options.AddMultipartRequestSupport();
+  });
 
 var app = builder.Build();
 
