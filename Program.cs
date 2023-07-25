@@ -1,6 +1,8 @@
 using GraphQL.AspNet.Configuration;
 using GraphQL.AspNet.ServerExtensions.MultipartRequests;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PickAndEat;
 
@@ -9,6 +11,12 @@ var settings = new Settings(builder.Configuration);
 
 builder.Services
   .AddSingleton(settings);
+
+builder.Services
+  .AddDbContext<Database>();
+
+builder.Services.AddDataProtection()
+  .PersistKeysToDbContext<Database>();
 
 builder.Services
   .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -30,14 +38,16 @@ builder.Services
 builder.Services
   .AddAuthorization();
 
-builder.Services
-  .AddDbContext<Database>();
-
 builder.Services.AddGraphQL(options => {
   options.AddMultipartRequestSupport();
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope()) {
+  var database = scope.ServiceProvider.GetRequiredService<Database>();
+  database.Database.Migrate();
+}
 
 if (app.Environment.IsDevelopment()) {
   app.UseDeveloperExceptionPage();
