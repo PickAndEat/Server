@@ -1,0 +1,38 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  release-docker:
+    name: Release Docker
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set version
+        uses: LouisMT/set-version-action@v2
+        id: set-version
+        with:
+          source: tag
+      - name: Set image tags
+        run: |
+          BASE_IMAGE_TAG="ghcr.io/${{ github.repository }}"
+          echo "LATEST_IMAGE_TAG=${BASE_IMAGE_TAG,,}:latest" >> "$GITHUB_ENV"
+          echo "VERSION_IMAGE_TAG=${BASE_IMAGE_TAG,,}:${{ steps.set-version.outputs.version }}" >> "$GITHUB_ENV"
+      - name: Docker login
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+      - name: Build images
+        env:
+          DOCKER_BUILDKIT: 1
+        run: |
+          docker build -t "$VERSION_IMAGE_TAG" .
+          docker tag "$VERSION_IMAGE_TAG" "$LATEST_IMAGE_TAG"
+      - name: Push images
+        run: |
+          docker push "$VERSION_IMAGE_TAG"
+          docker push "$LATEST_IMAGE_TAG"

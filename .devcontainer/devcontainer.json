@@ -1,0 +1,17 @@
+{
+  "name": "Pick & Eat",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+  "forwardPorts": [
+    5100
+  ],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csharp",
+        "EditorConfig.EditorConfig"
+      ]
+    }
+  }
+}
