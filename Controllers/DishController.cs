@@ -55,11 +55,29 @@ namespace PickAndEat.Controllers {
     }
 
     [Authorize]
+    [Mutation(typeof(SetNameType), TypeExpression = "Type!")]
+    public async Task<IGraphActionResult> SetName(int id, string? name) {
+      var updateCount = await Database.Dishes
+        .Where(d => d.Id == id && d.UserId == User.GetId())
+        .ExecuteUpdateAsync(d => d
+          .SetProperty(d => d.Name, name)
+        );
+
+      return Ok(new SetNameType { Success = updateCount > 0 });
+    }
+
+    [Authorize]
     [Query(typeof(IEnumerable<ListType>), TypeExpression = "[Type!]!")]
     public async Task<IGraphActionResult> List() {
-      var dishes = await Database.Dishes.Where(d => d.UserId == User.GetId()).ToListAsync();
+      var dishes = await Database.Dishes
+        .Where(d => d.UserId == User.GetId())
+        .Select(d => new ListType {
+          Id = d.Id,
+          Name = d.Name
+        })
+        .ToListAsync();
 
-      return Ok(dishes.Select(d => new ListType { Id = d.Id }));
+      return Ok(dishes);
     }
   }
 }
