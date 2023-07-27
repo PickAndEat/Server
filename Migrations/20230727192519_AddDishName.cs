@@ -1,4 +1,4 @@
-// Pick & Eat Server
+﻿// Pick & Eat Server
 // Copyright (C) 2023  Louis Matthijssen
 //
 // This program is free software: you can redistribute it and/or modify
@@ -14,21 +14,27 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace PickAndEat.Models {
-  public class DishModel {
-    public int Id { get; set; }
+#nullable disable
 
-    public string? Name { get; set; }
+namespace PickAndEat.Migrations {
+  /// <inheritdoc />
+  public partial class AddDishName : Migration {
+    /// <inheritdoc />
+    protected override void Up(MigrationBuilder migrationBuilder) {
+      migrationBuilder.AddColumn<string>(
+          name: "Name",
+          table: "Dishes",
+          type: "text",
+          nullable: true);
+    }
 
-    public required string ImageFilename { get; set; }
-
-    public required int UserId { get; set; }
-
-    public UserModel User { get; set; } = null!;
-
-    public static void OnModelCreating(ModelBuilder builder) {
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder) {
+      migrationBuilder.DropColumn(
+          name: "Name",
+          table: "Dishes");
     }
   }
 }
