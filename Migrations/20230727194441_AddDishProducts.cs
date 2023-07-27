@@ -1,4 +1,4 @@
-// Pick & Eat Server
+﻿// Pick & Eat Server
 // Copyright (C) 2023  Louis Matthijssen
 //
 // This program is free software: you can redistribute it and/or modify
@@ -14,15 +14,29 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using GraphQL.AspNet.Attributes;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace PickAndEat.Types.Dish {
-  [GraphType("DishList")]
-  public class ListType {
-    public required int Id { get; set; }
+#nullable disable
 
-    public string? Name { get; set; }
+namespace PickAndEat.Migrations {
+  /// <inheritdoc />
+  public partial class AddDishProducts : Migration {
+    /// <inheritdoc />
+    protected override void Up(MigrationBuilder migrationBuilder) {
+      migrationBuilder.AddColumn<List<string>>(
+          name: "Products",
+          table: "Dishes",
+          type: "jsonb",
+          nullable: false,
+          defaultValue: new List<string>());
+    }
 
-    public required List<string> Products { get; set; }
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder) {
+      migrationBuilder.DropColumn(
+          name: "Products",
+          table: "Dishes");
+    }
   }
 }
