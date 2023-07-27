@@ -17,14 +17,8 @@
 using GraphQL.AspNet.Attributes;
 
 namespace PickAndEat.Types.Dish {
-  [GraphType("DishList")]
-  public class ListType {
-    public required int Id { get; set; }
-
-    public required string Name { get; set; }
-
-    public required List<string> Products { get; set; }
-
-    public required string Notes { get; set; }
+  [GraphType("DishSetNotes")]
+  public class SetNotesType {
+    public required bool Success { get; set; }
   }
 }

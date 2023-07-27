@@ -58,7 +58,7 @@ namespace PickAndEat.Controllers {
 
     [Authorize]
     [Mutation(typeof(SetNameType), TypeExpression = "Type!")]
-    public async Task<IGraphActionResult> SetName(int id, string? name) {
+    public async Task<IGraphActionResult> SetName(int id, string name) {
       var updateCount = await Database.Dishes
         .Where(d => d.Id == id && d.UserId == User.GetId())
         .ExecuteUpdateAsync(d => d
@@ -81,6 +81,18 @@ namespace PickAndEat.Controllers {
     }
 
     [Authorize]
+    [Mutation(typeof(SetNotesType), TypeExpression = "Type!")]
+    public async Task<IGraphActionResult> SetNotes(int id, string notes) {
+      var updateCount = await Database.Dishes
+        .Where(d => d.Id == id && d.UserId == User.GetId())
+        .ExecuteUpdateAsync(d => d
+          .SetProperty(d => d.Notes, notes)
+        );
+
+      return Ok(new SetNotesType { Success = updateCount > 0 });
+    }
+
+    [Authorize]
     [Query(typeof(IEnumerable<ListType>), TypeExpression = "[Type!]!")]
     public async Task<IGraphActionResult> List() {
       var dishes = await Database.Dishes
@@ -88,7 +100,8 @@ namespace PickAndEat.Controllers {
         .Select(d => new ListType {
           Id = d.Id,
           Name = d.Name,
-          Products = d.Products
+          Products = d.Products,
+          Notes = d.Notes
         })
         .ToListAsync();
 
