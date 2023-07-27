@@ -20,9 +20,11 @@ namespace PickAndEat.Models {
   public class DishModel {
     public int Id { get; set; }
 
-    public string? Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
     public List<string> Products { get; set; } = new List<string>();
+
+    public string Notes { get; set; } = string.Empty;
 
     public required string ImageFilename { get; set; }
 
@@ -32,9 +34,17 @@ namespace PickAndEat.Models {
 
     public static void OnModelCreating(ModelBuilder builder) {
       builder.Entity<DishModel>()
+        .Property(d => d.Name)
+        .HasDefaultValue("");
+
+      builder.Entity<DishModel>()
         .Property(d => d.Products)
         .HasColumnType("jsonb")
         .HasDefaultValue(new List<string>());
+
+      builder.Entity<DishModel>()
+        .Property(d => d.Notes)
+        .HasDefaultValue("");
     }
   }
 }
