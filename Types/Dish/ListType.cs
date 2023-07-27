@@ -21,10 +21,13 @@ namespace PickAndEat.Types.Dish {
   public class ListType {
     public required int Id { get; set; }
 
+    [GraphField(TypeExpression = "Type!")]
     public required string Name { get; set; }
 
+    [GraphField(TypeExpression = "[Type!]!")]
     public required List<string> Products { get; set; }
 
+    [GraphField(TypeExpression = "Type!")]
     public required string Notes { get; set; }
   }
 }
