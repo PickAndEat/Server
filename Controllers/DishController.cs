@@ -39,13 +39,15 @@ namespace PickAndEat.Controllers {
         return Error("Missing image", "MISSING_IMAGE");
       }
 
-      var filename = $"{Guid.NewGuid()}.webp";
-      var dish = new DishModel { ImageFilename = filename, UserId = User.GetId() };
+      var dish = new DishModel {
+        ImageFilename = $"{Guid.NewGuid()}.webp",
+        UserId = User.GetId()
+      };
 
       using (var imageStream = await imageUpload.OpenFileAsync())
       using (var image = Image.Load(imageStream)) {
         image.Mutate(i => i.Resize(100, 100));
-        await image.SaveAsWebpAsync(filename);
+        await image.SaveAsWebpAsync(dish.ImageFilename);
       }
 
       Database.Dishes.Add(dish);
@@ -67,13 +69,26 @@ namespace PickAndEat.Controllers {
     }
 
     [Authorize]
+    [Mutation(typeof(SetProductsType), TypeExpression = "Type!")]
+    public async Task<IGraphActionResult> SetProcucts(int id, List<string> products) {
+      var updateCount = await Database.Dishes
+        .Where(d => d.Id == id && d.UserId == User.GetId())
+        .ExecuteUpdateAsync(d => d
+          .SetProperty(d => d.Products, products)
+        );
+
+      return Ok(new SetProductsType { Success = updateCount > 0 });
+    }
+
+    [Authorize]
     [Query(typeof(IEnumerable<ListType>), TypeExpression = "[Type!]!")]
     public async Task<IGraphActionResult> List() {
       var dishes = await Database.Dishes
         .Where(d => d.UserId == User.GetId())
         .Select(d => new ListType {
           Id = d.Id,
-          Name = d.Name
+          Name = d.Name,
+          Products = d.Products
         })
         .ToListAsync();
 

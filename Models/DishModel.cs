@@ -22,6 +22,8 @@ namespace PickAndEat.Models {
 
     public string? Name { get; set; }
 
+    public List<string> Products { get; set; } = new List<string>();
+
     public required string ImageFilename { get; set; }
 
     public required int UserId { get; set; }
@@ -29,6 +31,10 @@ namespace PickAndEat.Models {
     public UserModel User { get; set; } = null!;
 
     public static void OnModelCreating(ModelBuilder builder) {
+      builder.Entity<DishModel>()
+        .Property(d => d.Products)
+        .HasColumnType("jsonb")
+        .HasDefaultValue(new List<string>());
     }
   }
 }
