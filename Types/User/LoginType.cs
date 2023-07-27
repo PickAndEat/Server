@@ -19,6 +19,7 @@ using GraphQL.AspNet.Attributes;
 namespace PickAndEat.Types.User {
   [GraphType("UserLogin")]
   public class LoginType {
+    [GraphField(TypeExpression = "Type!")]
     public required string AccessToken { get; set; }
   }
 }

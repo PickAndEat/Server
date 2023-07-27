@@ -58,7 +58,7 @@ namespace PickAndEat.Controllers {
 
     [Authorize]
     [Mutation(typeof(SetNameType), TypeExpression = "Type!")]
-    public async Task<IGraphActionResult> SetName(int id, string name) {
+    public async Task<IGraphActionResult> SetName(int id, [FromGraphQL(TypeExpression = "Type!")] string name) {
       var updateCount = await Database.Dishes
         .Where(d => d.Id == id && d.UserId == User.GetId())
         .ExecuteUpdateAsync(d => d
@@ -70,7 +70,7 @@ namespace PickAndEat.Controllers {
 
     [Authorize]
     [Mutation(typeof(SetProductsType), TypeExpression = "Type!")]
-    public async Task<IGraphActionResult> SetProcucts(int id, List<string> products) {
+    public async Task<IGraphActionResult> SetProcucts(int id, [FromGraphQL(TypeExpression = "[Type!]!")] List<string> products) {
       var updateCount = await Database.Dishes
         .Where(d => d.Id == id && d.UserId == User.GetId())
         .ExecuteUpdateAsync(d => d
@@ -82,7 +82,7 @@ namespace PickAndEat.Controllers {
 
     [Authorize]
     [Mutation(typeof(SetNotesType), TypeExpression = "Type!")]
-    public async Task<IGraphActionResult> SetNotes(int id, string notes) {
+    public async Task<IGraphActionResult> SetNotes(int id, [FromGraphQL(TypeExpression = "Type!")] string notes) {
       var updateCount = await Database.Dishes
         .Where(d => d.Id == id && d.UserId == User.GetId())
         .ExecuteUpdateAsync(d => d
