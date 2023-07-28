@@ -26,9 +26,12 @@ using PickAndEat.Types.Dish;
 
 namespace PickAndEat.Controllers {
   public class DishController : GraphController {
+    private Settings Settings { get; }
+
     private Database Database { get; }
 
-    public DishController(Database database) {
+    public DishController(Settings settings, Database database) {
+      Settings = settings;
       Database = database;
     }
 
@@ -47,7 +50,9 @@ namespace PickAndEat.Controllers {
       using (var imageStream = await imageUpload.OpenFileAsync())
       using (var image = Image.Load(imageStream)) {
         image.Mutate(i => i.Resize(100, 100));
-        await image.SaveAsWebpAsync(dish.ImageFilename);
+
+        var fullPath = Path.Combine(Settings.BlobStoragePath, dish.ImageFilename);
+        await image.SaveAsWebpAsync(fullPath);
       }
 
       Database.Dishes.Add(dish);
