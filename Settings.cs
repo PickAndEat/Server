@@ -22,6 +22,8 @@ namespace PickAndEat {
     public string ConnectionString { get; }
     public SymmetricSecurityKey JwtKey { get; }
 
+    public string BlobStoragePath { get; }
+
     public Settings(IConfiguration configuration) {
       var jwtKey = configuration["Jwt:Key"];
       if (jwtKey == null) throw new Exception("JWT key not set");
@@ -29,8 +31,13 @@ namespace PickAndEat {
       var connectionString = configuration.GetConnectionString("Default");
       if (connectionString == null) throw new Exception("Default connection string not set");
 
+      var blobStoragePath = configuration["BlobStorage:Path"];
+      if (blobStoragePath == null) throw new Exception("Blob storage path not set");
+      Directory.CreateDirectory(blobStoragePath);
+
       ConnectionString = connectionString;
       JwtKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+      BlobStoragePath = blobStoragePath;
     }
   }
 }
