@@ -17,22 +17,23 @@
 using Microsoft.EntityFrameworkCore;
 
 namespace PickAndEat.Models {
-  public class UserModel {
+  public class ShoppingListItemModel {
     public int Id { get; set; }
 
-    public required string EmailAddress { get; set; }
+    public required List<string> Products { get; set; }
 
-    public required string Password { get; set; }
+    public required int UserId { get; set; }
 
-    public ICollection<DishModel> Dishes { get; set; } = null!;
+    public required int DishId { get; set; }
 
-    public ICollection<ShoppingListItemModel> ShoppingListItems { get; set; } = null!;
+    public UserModel User { get; set; } = null!;
+
+    public DishModel Dish { get; set; } = null!;
 
     public static void OnModelCreating(ModelBuilder builder) {
-      builder
-        .Entity<UserModel>()
-        .HasIndex(u => u.EmailAddress)
-        .IsUnique();
+      builder.Entity<ShoppingListItemModel>()
+        .Property(d => d.Products)
+        .HasColumnType("jsonb");
     }
   }
 }

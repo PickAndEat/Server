@@ -32,6 +32,8 @@ namespace PickAndEat.Models {
 
     public UserModel User { get; set; } = null!;
 
+    public ICollection<ShoppingListItemModel> ShoppingListItems { get; set; } = null!;
+
     public static void OnModelCreating(ModelBuilder builder) {
       builder.Entity<DishModel>()
         .Property(d => d.Name)
