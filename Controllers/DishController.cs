@@ -14,6 +14,7 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
+using Blurhash.ImageSharp;
 using GraphQL.AspNet.Attributes;
 using GraphQL.AspNet.Controllers;
 using GraphQL.AspNet.Interfaces.Controllers;
@@ -42,18 +43,20 @@ namespace PickAndEat.Controllers {
         return Error("Missing image", "MISSING_IMAGE");
       }
 
+      using var imageStream = await imageUpload.OpenFileAsync();
+      using var image = Image.Load<Rgb24>(imageStream);
+
+      image.Mutate(i => i.Resize(100, 100));
+
+      var filename = $"{Guid.NewGuid()}.webp";
+      var fullPath = Path.Combine(Settings.BlobStoragePath, filename);
+      await image.SaveAsWebpAsync(fullPath);
+
       var dish = new DishModel {
-        ImageFilename = $"{Guid.NewGuid()}.webp",
-        UserId = User.GetId()
+        ImageFilename = filename,
+        UserId = User.GetId(),
+        ImageBlurhash = Blurhasher.Encode(image, 4, 4)
       };
-
-      using (var imageStream = await imageUpload.OpenFileAsync())
-      using (var image = Image.Load(imageStream)) {
-        image.Mutate(i => i.Resize(100, 100));
-
-        var fullPath = Path.Combine(Settings.BlobStoragePath, dish.ImageFilename);
-        await image.SaveAsWebpAsync(fullPath);
-      }
 
       Database.Dishes.Add(dish);
       await Database.SaveChangesAsync();
@@ -133,7 +136,8 @@ namespace PickAndEat.Controllers {
           Id = d.Id,
           Name = d.Name,
           Products = d.Products,
-          Notes = d.Notes
+          Notes = d.Notes,
+          ImageBlurhash = d.ImageBlurhash
         })
         .ToListAsync();
 

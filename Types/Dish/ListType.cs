@@ -29,5 +29,7 @@ namespace PickAndEat.Types.Dish {
 
     [GraphField(TypeExpression = "Type!")]
     public required string Notes { get; set; }
+
+    public required string ImageBlurhash { get; set; }
   }
 }

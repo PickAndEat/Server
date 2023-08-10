@@ -56,7 +56,8 @@ namespace PickAndEat.Controllers {
         Id = dish.Id,
         Name = dish.Name,
         Notes = dish.Notes,
-        Products = dish.Products
+        Products = dish.Products,
+        ImageBlurhash = dish.ImageBlurhash
       };
     }
   }
