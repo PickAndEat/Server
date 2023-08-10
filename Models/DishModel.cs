@@ -28,6 +28,8 @@ namespace PickAndEat.Models {
 
     public required string ImageFilename { get; set; }
 
+    public required string ImageBlurhash { get; set; }
+
     public required int UserId { get; set; }
 
     public UserModel User { get; set; } = null!;
