@@ -98,6 +98,33 @@ namespace PickAndEat.Controllers {
     }
 
     [Authorize]
+    [Mutation(typeof(AddToShoppingListType), TypeExpression = "Type!")]
+    public async Task<IGraphActionResult> AddToShoppingList(int id) {
+      var dish = await Database.Dishes
+        .Where(d => d.Id == id && d.UserId == User.GetId())
+        .Select(d => new {
+          Id = d.Id,
+          Products = d.Products
+        })
+        .FirstOrDefaultAsync();
+
+      if (dish == null) {
+        return NotFound("Dish not found");
+      }
+
+      var shoppingListItem = new ShoppingListItemModel {
+        Products = dish.Products,
+        UserId = User.GetId(),
+        DishId = dish.Id
+      };
+
+      Database.ShoppingListItems.Add(shoppingListItem);
+      await Database.SaveChangesAsync();
+
+      return Ok(new AddToShoppingListType { ShoppingListItemId = shoppingListItem.Id });
+    }
+
+    [Authorize]
     [Query(typeof(IEnumerable<ListType>), TypeExpression = "[Type!]!")]
     public async Task<IGraphActionResult> List() {
       var dishes = await Database.Dishes

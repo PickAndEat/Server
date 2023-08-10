@@ -14,25 +14,11 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-using Microsoft.EntityFrameworkCore;
+using GraphQL.AspNet.Attributes;
 
-namespace PickAndEat.Models {
-  public class UserModel {
-    public int Id { get; set; }
-
-    public required string EmailAddress { get; set; }
-
-    public required string Password { get; set; }
-
-    public ICollection<DishModel> Dishes { get; set; } = null!;
-
-    public ICollection<ShoppingListItemModel> ShoppingListItems { get; set; } = null!;
-
-    public static void OnModelCreating(ModelBuilder builder) {
-      builder
-        .Entity<UserModel>()
-        .HasIndex(u => u.EmailAddress)
-        .IsUnique();
-    }
+namespace PickAndEat.Types.Dish {
+  [GraphType("DishAddToShoppingList")]
+  public class AddToShoppingListType {
+    public int ShoppingListItemId { get; set; }
   }
 }

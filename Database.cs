@@ -33,6 +33,8 @@ namespace PickAndEat {
 
     public required DbSet<DishModel> Dishes { get; set; }
 
+    public required DbSet<ShoppingListItemModel> ShoppingListItems { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder options) {
       options.UseNpgsql(Settings.ConnectionString);
       options.UseExceptionProcessor();
@@ -41,6 +43,7 @@ namespace PickAndEat {
     protected override void OnModelCreating(ModelBuilder builder) {
       UserModel.OnModelCreating(builder);
       DishModel.OnModelCreating(builder);
+      ShoppingListItemModel.OnModelCreating(builder);
     }
   }
 }
